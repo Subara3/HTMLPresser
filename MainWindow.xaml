@@ -1,0 +1,66 @@
+﻿<Window x:Class="HTMLPresser.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:input="clr-namespace:HTMLPresser.input"
+        mc:Ignorable="d"
+        Title="HTMLPresser" Height="500" Width="500"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type TextBox}" x:Key="Textarea">
+            <Setter Property="AcceptsReturn" Value="True" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+        </Style>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static input:Commands.OutputBookListTag}" CanExecute="OutputBookListTag_CanExcute" Executed="OutputBookListTag_Excuted"/>
+        <CommandBinding Command="{x:Static input:Commands.Refer}" CanExecute="Refer_CanExcute" Executed="Refer_Excuted"/>
+    </Window.CommandBindings>
+
+
+
+    <Grid Background="AliceBlue" Margin="0,0,0,-31">
+        <DockPanel Width="400" Margin="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="100"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="100"/>
+                    <RowDefinition Height="30"/>
+                </Grid.RowDefinitions>
+                
+                <Label Content="作品名" Grid.Row="0" Grid.Column="0"/>
+                <TextBox Name="Textbox_BookName" Grid.Row="0" Grid.Column="1"/>
+                <Label Content="画像ファイル名" Grid.Row="1" Grid.Column="0"/>
+                <TextBox Name="Textbox_Image" Grid.Row="1" Grid.Column="1"/>
+                <Label Content="値段" Grid.Row="2" Grid.Column="0"/>
+                <TextBox Name="Textbox_Value" Grid.Row="2" Grid.Column="1"/>
+                <Label Content="仕様" Grid.Row="3" Grid.Column="0"/>
+                <TextBox Name="Textbox_Spec" Grid.Row="3" Grid.Column="1"/>
+                <Label Content="発売日" Grid.Row="4" Grid.Column="0"/>
+                <DatePicker Name="DatePicker_Date" Grid.Row="4" Grid.Column="1"/>
+                <Label Content="販売サイトリンク" Grid.Row="5" Grid.Column="0"/>
+                <TextBox Name="Textbox_Link" Grid.Row="5" Grid.Column="1"/>
+                <Label Content="詳細" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"/>
+                <TextBox Name="Textbox_Info" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource Textarea}"/>
+                <Label Content="出力タグ" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2"/>
+                <TextBox Name="Textbox_Output" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource Textarea}"/>
+                <Button x:Name="Button_OK" Content="出力する" Grid.Column="0" Grid.Row="10" Margin="5" Command="{x:Static input:Commands.OutputBookListTag}"/>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>
