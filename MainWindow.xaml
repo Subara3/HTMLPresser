@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:input="clr-namespace:HTMLPresser.input"
         mc:Ignorable="d"
-        Title="HTMLPresser" Height="500" Width="500"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+        Title="HTMLPresser" Height="562.737" Width="Auto"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}" Closing="Window_Closing">
 
     <Window.Resources>
         <Style TargetType="{x:Type TextBox}" x:Key="Textarea">
@@ -15,52 +15,81 @@
             <Setter Property="VerticalContentAlignment" Value="Top" />
         </Style>
     </Window.Resources>
+
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static input:Commands.OutputBookListTag}" CanExecute="OutputBookListTag_CanExcute" Executed="OutputBookListTag_Excuted"/>
         <CommandBinding Command="{x:Static input:Commands.Refer}" CanExecute="Refer_CanExcute" Executed="Refer_Excuted"/>
+        <CommandBinding Command="{x:Static input:Commands.DeleteBook}" CanExecute="DeleteBook_CanExcute" Executed="DeleteBook_Excuted"/>
+        <CommandBinding Command="{x:Static input:Commands.AddBook}" CanExecute="AddBook_CanExcute" Executed="AddBook_Excuted"/>
     </Window.CommandBindings>
 
+    <Grid>
+        <!--1タブ目-->
+        <TabControl>
+            <TabItem Header="作品一覧">
+                <DockPanel Background="AliceBlue">
+                    <DockPanel>
+                        <ListBox Name="listbox_books" DockPanel.Dock="Top" Width="200" Background="White" ItemsSource="{Binding booklist}" DisplayMemberPath="BookName" SelectedItem="{Binding SelectedBook}"/>
+                    </DockPanel>
 
+                    <DockPanel DockPanel.Dock="Left">
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                            <Label Content="一覧ファイル"/>
+                            <TextBox Name="Textbox_HTML" Width="390" Text="{Binding BookHTML,Mode=TwoWay}"/>
+                            <Button Content="参照" Command="{x:Static input:Commands.Refer}" CommandParameter="Books"/>
+                            <Button x:Name="Button_OK" Content="出力" Command="{x:Static input:Commands.OutputBookListTag}"/>
 
-    <Grid Background="AliceBlue" Margin="0,0,0,-31">
-        <DockPanel Width="400" Margin="5">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="90"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="100"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="100"/>
-                    <RowDefinition Height="30"/>
-                </Grid.RowDefinitions>
-                
-                <Label Content="作品名" Grid.Row="0" Grid.Column="0"/>
-                <TextBox Name="Textbox_BookName" Grid.Row="0" Grid.Column="1"/>
-                <Label Content="画像ファイル名" Grid.Row="1" Grid.Column="0"/>
-                <TextBox Name="Textbox_Image" Grid.Row="1" Grid.Column="1"/>
-                <Label Content="値段" Grid.Row="2" Grid.Column="0"/>
-                <TextBox Name="Textbox_Value" Grid.Row="2" Grid.Column="1"/>
-                <Label Content="仕様" Grid.Row="3" Grid.Column="0"/>
-                <TextBox Name="Textbox_Spec" Grid.Row="3" Grid.Column="1"/>
-                <Label Content="発売日" Grid.Row="4" Grid.Column="0"/>
-                <DatePicker Name="DatePicker_Date" Grid.Row="4" Grid.Column="1"/>
-                <Label Content="販売サイトリンク" Grid.Row="5" Grid.Column="0"/>
-                <TextBox Name="Textbox_Link" Grid.Row="5" Grid.Column="1"/>
-                <Label Content="詳細" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"/>
-                <TextBox Name="Textbox_Info" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource Textarea}"/>
-                <Label Content="出力タグ" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2"/>
-                <TextBox Name="Textbox_Output" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource Textarea}"/>
-                <Button x:Name="Button_OK" Content="出力する" Grid.Column="0" Grid.Row="10" Margin="5" Command="{x:Static input:Commands.OutputBookListTag}"/>
-            </Grid>
-        </DockPanel>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                            <Button x:Name="Button_AddBook" Content="追加" Command="{x:Static input:Commands.AddBook}"/>
+                            <Button x:Name="Button_DeleteBook" Content="削除" Command="{x:Static input:Commands.DeleteBook}"/>
+                        </StackPanel>
+
+                        <GroupBox Header="発行物" DockPanel.Dock="Top">
+                            <DockPanel Width="400" Margin="5">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="100"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Label Content="作品名" Grid.Row="0" Grid.Column="0"/>
+                                    <TextBox Name="Textbox_BookName" Grid.Row="0" Grid.Column="1" Text="{Binding SelectedBook.BookName,Mode=TwoWay}"/>
+                                    <Label Content="画像ファイル名" Grid.Row="1" Grid.Column="0"/>
+                                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                                        <TextBox Name="Textbox_Image" Width="280" Text="{Binding SelectedBook.ImageFileName,Mode=TwoWay}"/>
+                                        <Button Content="参照" Command="{x:Static input:Commands.Refer}" CommandParameter="ImageSelect"/>
+                                    </StackPanel>
+                                    <Label Content="値段" Grid.Row="2" Grid.Column="0"/>
+                                    <TextBox Name="Textbox_Value" Grid.Row="2" Grid.Column="1" Text="{Binding SelectedBook.ValueText,Mode=TwoWay}"/>
+                                    <Label Content="仕様" Grid.Row="3" Grid.Column="0"/>
+                                    <TextBox Name="Textbox_Spec" Grid.Row="3" Grid.Column="1" Text="{Binding SelectedBook.Spec,Mode=TwoWay}"/>
+                                    <Label Content="発売日" Grid.Row="4" Grid.Column="0"/>
+                                    <DatePicker Name="DatePicker_Date" Grid.Row="4" Grid.Column="1" SelectedDate="{Binding SelectedBook.PublishdDate,Mode=TwoWay}"/>
+                                    <Label Content="販売サイトリンク" Grid.Row="5" Grid.Column="0"/>
+                                    <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1">
+                                        <TextBox Name="Textbox_Link" Text="{Binding SelectedBook.ShopURL,Mode=TwoWay}" Width="250"/>
+                                        <CheckBox Name="Checkox_soldOut" IsChecked="{Binding SelectedBook.IsSoldout}" Content="完売" Margin="6"/>
+                                    </StackPanel>
+                                    <Label Content="詳細" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                    <TextBox Name="Textbox_Info" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource Textarea}" Text="{Binding SelectedBook.Info,Mode=TwoWay}"/>
+                                </Grid>
+                            </DockPanel>
+                        </GroupBox>
+                    </DockPanel>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+
     </Grid>
 </Window>

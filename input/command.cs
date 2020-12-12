@@ -19,5 +19,17 @@ namespace HTMLPresser.input
         /// Refer
         /// </summary>
         public static RoutedCommand Refer { get { return _Refer; } }
+        
+        private static RoutedCommand _AddBook = new RoutedCommand("AddBook", typeof(Commands));
+        /// <summary>
+        /// AddBook
+        /// </summary>
+        public static RoutedCommand AddBook { get { return _AddBook; } }
+
+        private static RoutedCommand _DeleteBook = new RoutedCommand("DeleteBook", typeof(Commands));
+        /// <summary>
+        /// DeleteBook
+        /// </summary>
+        public static RoutedCommand DeleteBook { get { return _DeleteBook; } }
     }
 }
