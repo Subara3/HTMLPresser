@@ -18,7 +18,7 @@ namespace HTMLPresser
         {
             InitializeComponent();
             BookHTML = Properties.Settings.Default.BooksHTMLPath;
-            booklist = new ObservableCollection<Books>();
+            booklist = new ObservableCollection<Book>();
             if(File.Exists(BookHTML))
             {
                 AnalyzeBooksTag();
@@ -31,26 +31,26 @@ namespace HTMLPresser
         
         public static DependencyProperty booklistProperty = DependencyProperty.Register(
             "booklist",
-            typeof(ObservableCollection<Books>),
+            typeof(ObservableCollection<Book>),
             typeof(MainWindow),
             new PropertyMetadata(null));
 
-        public ObservableCollection<Books> booklist
+        public ObservableCollection<Book> booklist
         {
-            get { return (ObservableCollection<Books>)GetValue(booklistProperty); }
+            get { return (ObservableCollection<Book>)GetValue(booklistProperty); }
             set { SetValue(booklistProperty, value); }
         }
 
 
         public static DependencyProperty SelectedBookProperty = DependencyProperty.Register(
             "SelectedBook",
-            typeof(Books),
+            typeof(Book),
             typeof(MainWindow),
-            new PropertyMetadata(new Books()));
+            new PropertyMetadata(new Book()));
 
-        public Books SelectedBook
+        public Book SelectedBook
         {
-            get { return (Books)GetValue(SelectedBookProperty); }
+            get { return (Book)GetValue(SelectedBookProperty); }
             set { SetValue(SelectedBookProperty, value); }
         }
 
@@ -84,55 +84,61 @@ namespace HTMLPresser
         /// <param name="e"></param>
         private void OutputBookListTag_Excuted(object sender, ExecutedRoutedEventArgs e)
         {
-
-            string tmp = "";
-            using (StreamReader sr = new StreamReader("Books.txt", Encoding.GetEncoding("utf-8")))
+            try
             {
-                tmp = sr.ReadToEnd();
-                sr.Close();
-            }
+                string tmp = "";
+                using (StreamReader sr = new StreamReader("Book.txt", Encoding.GetEncoding("utf-8")))
+                {
+                    tmp = sr.ReadToEnd();
+                    sr.Close();
+                }
 
-            StringBuilder sb = new StringBuilder();
-            int count = 0;
-            foreach (var book in booklist)
+                StringBuilder sb = new StringBuilder();
+                int count = 0;
+                foreach (var book in booklist)
+                {
+                    string tag = tmp;
+                    tag = tag.Replace("【_TITLE_】", book.BookName);
+                    tag = tag.Replace("【_VALUE_】", book.ValueText);
+                    tag = tag.Replace("【_FILE_】", book.ImageFileName);
+                    tag = tag.Replace("【_SPEC_】", book.Spec);
+                    tag = tag.Replace("【_DATE_】", book.PublishdDate.ToString("yyyy/MM/dd"));
+                    tag = tag.Replace("【_URL_】", book.ShopURL);
+                    tag = tag.Replace("【_INFO_】", book.Info);
+                    tag = tag.Replace("【_BOOK_TYPE_】", (count % 2 == 0) ? "01" : "01");
+                    tag = tag.Replace("【_Button_Option_】", (!book.IsSoldout) ? "target=\"_break\" class=\"btn blue\"" : "class=\"btn red\"");
+                    sb.Append(tag);
+                    count++;
+                }
+                string output = sb.ToString();
+
+                string target = "";
+                using (StreamReader sr = new StreamReader(BookHTML, Encoding.GetEncoding("utf-8")))
+                {
+                    target = sr.ReadToEnd();
+                    sr.Close();
+                }
+
+                var start = target.IndexOf("<!--【販売物一覧開始】-->");
+                start = start + "<!--【販売物一覧開始】-->".Length + 1;
+                var end = target.IndexOf("<!--【販売物一覧終了】-->");
+
+                string html = target.Remove(start, end - start);
+                html = html.Insert(start, output);
+
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(
+                BookHTML,
+                false,
+                System.Text.Encoding.GetEncoding("utf-8"));
+                //TextBox1.Textの内容を書き込む
+                sw.Write(html);
+                //閉じる
+                sw.Close();
+            }
+            catch(Exception ex)
             {
-                string tag = tmp;
-                tag = tag.Replace("【_TITLE_】", book.BookName);
-                tag = tag.Replace("【_VALUE_】", book.ValueText);
-                tag = tag.Replace("【_FILE_】", book.ImageFileName);
-                tag = tag.Replace("【_SPEC_】", book.Spec);
-                tag = tag.Replace("【_DATE_】", book.PublishdDate.ToString("yyyy/MM/dd"));
-                tag = tag.Replace("【_URL_】", book.ShopURL);
-                tag = tag.Replace("【_INFO_】", book.Info);
-                tag = tag.Replace("【_BOOK_TYPE_】", (count%2==0)?"01":"01");
-                tag = tag.Replace("【_Button_Option_】", (!book.IsSoldout) ? "target=\"_break\" class=\"btn blue\"" : "class=\"btn red\"");
-                sb.Append(tag);
-                count++;
+                MessageBox.Show($"エラー：{ex.Message}");
             }
-            string output = sb.ToString();
-
-            string target = "";
-            using (StreamReader sr = new StreamReader(BookHTML, Encoding.GetEncoding("utf-8")))
-            {
-                target = sr.ReadToEnd();
-                sr.Close();
-            }
-
-            var start = target.IndexOf("<!--【販売物一覧開始】-->");
-            start = start + "<!--【販売物一覧開始】-->".Length + 1;
-            var end = target.IndexOf("<!--【販売物一覧終了】-->");
-
-            string html = target.Remove(start, end - start);
-            html = html.Insert(start,output);
-
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(
-            BookHTML,
-            false,
-            System.Text.Encoding.GetEncoding("utf-8"));
-                    //TextBox1.Textの内容を書き込む
-                    sw.Write(html);
-                    //閉じる
-                    sw.Close();
         }
 
 
@@ -153,7 +159,7 @@ namespace HTMLPresser
         /// <param name="e"></param>
         private void Refer_Excuted(object sender, ExecutedRoutedEventArgs e)
         {
-            if((string)e.Parameter == "Books")
+            if((string)e.Parameter == "Book")
             {
                 // ダイアログのインスタンスを生成
                 var dialog = new OpenFileDialog();
@@ -233,7 +239,7 @@ namespace HTMLPresser
         /// <param name="e"></param>
         private void AddBook_Excuted(object sender, ExecutedRoutedEventArgs e)
         {
-            booklist.Add(new Books("新しい作品"));
+            booklist.Add(new Book("新しい作品"));
         }
 
 
@@ -252,11 +258,11 @@ namespace HTMLPresser
 
                 // classを指定してElementを取得
                 var classpList = doc.GetElementsByClassName("book");
-                Books book;
+                Book book;
                 booklist.Clear();
                 foreach (var c in classpList)
                 {
-                    book = new Books();
+                    book = new Book();
                     var title = c.GetElementsByTagName("h4");
                     book.BookName = title[0].TextContent;
 

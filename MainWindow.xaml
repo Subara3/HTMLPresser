@@ -40,9 +40,9 @@
                             <Button x:Name="Button_OK" Content="出力" Command="{x:Static input:Commands.OutputBookListTag}"/>
 
                         </StackPanel>
-                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                            <Button x:Name="Button_AddBook" Content="追加" Command="{x:Static input:Commands.AddBook}"/>
-                            <Button x:Name="Button_DeleteBook" Content="削除" Command="{x:Static input:Commands.DeleteBook}"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
+                            <Button x:Name="Button_AddBook" Content="追加" Command="{x:Static input:Commands.AddBook}" Margin="2"/>
+                            <Button x:Name="Button_DeleteBook" Content="削除" Command="{x:Static input:Commands.DeleteBook}" Margin="2"/>
                         </StackPanel>
 
                         <GroupBox Header="発行物" DockPanel.Dock="Top">
@@ -86,6 +86,17 @@
                                 </Grid>
                             </DockPanel>
                         </GroupBox>
+                    </DockPanel>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="雑記">
+
+                <DockPanel Background="AliceBlue">
+                    <DockPanel>
+                        <TreeView Width="200"/>
+                    </DockPanel>
+
+                    <DockPanel DockPanel.Dock="Left">
                     </DockPanel>
                 </DockPanel>
             </TabItem>

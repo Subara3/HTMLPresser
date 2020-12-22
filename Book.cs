@@ -9,11 +9,11 @@ using System.Windows;
 
 namespace HTMLPresser
 {
-    public class Books : INotifyPropertyChanged
+    public class Book : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Books(string name ="")
+        public Book(string name ="")
         {
             BookName = name;
         }
