@@ -1,14 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.MobileControls;
 using System.Windows;
 
 namespace HTMLPresser
 {
+    public enum Buttoncolors
+    {
+        white,
+        black,
+        yellow,
+        pink,
+        blue,
+        green,
+    }
+
+    public class ShopInfo : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private string shopName;
+
+        public string ShopName
+        {
+            get { return shopName; }
+            set
+            {
+                shopName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string shopURL;
+
+        public string ShopURL
+        {
+            get { return shopURL; }
+            set
+            {
+                shopURL = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Buttoncolors button_color;
+
+        public Buttoncolors Button_color
+        {
+            get { return button_color; }
+            set
+            {
+                button_color = value;
+                OnPropertyChanged();
+            }
+        }
+
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+    }
+
+
     public class Book : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -78,14 +137,14 @@ namespace HTMLPresser
             }
         }
 
-        private string shopURL;
+        private ObservableCollection<ShopInfo> shopInfoList = new ObservableCollection <ShopInfo>();
 
-        public string ShopURL
+        public ObservableCollection<ShopInfo> ShopInfoList
         {
-            get { return shopURL; }
+            get { return shopInfoList; }
             set
             {
-                shopURL = value;
+                ShopInfoList = value;
                 OnPropertyChanged();
             }
         }
@@ -113,7 +172,7 @@ namespace HTMLPresser
                 isSoldout = value;
                 if(isSoldout == true)
                 {
-                    ShopURL = "#kikan";
+                    //ShopURL = "#kikan";
                 }
                 OnPropertyChanged();
             }

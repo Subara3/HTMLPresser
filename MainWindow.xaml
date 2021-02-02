@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:input="clr-namespace:HTMLPresser.input"
         mc:Ignorable="d"
+        xmlns:local="clr-namespace:HTMLPresser"
         Title="HTMLPresser" Height="562.737" Width="Auto"
         DataContext="{Binding RelativeSource={RelativeSource Self}}" Closing="Window_Closing">
 
@@ -46,7 +47,7 @@
                         </StackPanel>
 
                         <GroupBox Header="発行物" DockPanel.Dock="Top">
-                            <DockPanel Width="400" Margin="5">
+                            <DockPanel Width="Auto" Margin="5">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="90"/>
@@ -58,7 +59,7 @@
                                         <RowDefinition Height="30"/>
                                         <RowDefinition Height="30"/>
                                         <RowDefinition Height="30"/>
-                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="150"/>
                                         <RowDefinition Height="30"/>
                                         <RowDefinition Height="100"/>
                                     </Grid.RowDefinitions>
@@ -78,7 +79,13 @@
                                     <DatePicker Name="DatePicker_Date" Grid.Row="4" Grid.Column="1" SelectedDate="{Binding SelectedBook.PublishdDate,Mode=TwoWay}"/>
                                     <Label Content="販売サイトリンク" Grid.Row="5" Grid.Column="0"/>
                                     <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1">
-                                        <TextBox Name="Textbox_Link" Text="{Binding SelectedBook.ShopURL,Mode=TwoWay}" Width="250"/>
+                                        <DataGrid ItemsSource="{Binding SelectedBook.ShopInfoList,Mode=TwoWay}" Width="Auto" AutoGenerateColumns="False">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="お店" Binding="{Binding ShopName}"/>
+                                                <DataGridTextColumn Header="URL" Binding="{Binding ShopURL}"/>
+                                                <DataGridComboBoxColumn Header="ボタン状態" SelectedValueBinding="{Binding Button_color}" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:Buttoncolors}}}"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
                                         <CheckBox Name="Checkox_soldOut" IsChecked="{Binding SelectedBook.IsSoldout}" Content="完売" Margin="6"/>
                                     </StackPanel>
                                     <Label Content="詳細" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"/>

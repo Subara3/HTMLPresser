@@ -6,6 +6,9 @@ using System.IO;
 using Microsoft.Win32;
 using AngleSharp.Html.Parser;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace HTMLPresser
 {
@@ -14,6 +17,12 @@ namespace HTMLPresser
     /// </summary>
     public partial class MainWindow : Window
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        public string FullName => $"Anders {Name}";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -87,9 +96,17 @@ namespace HTMLPresser
             try
             {
                 string tmp = "";
+                string button_tmp = "";
                 using (StreamReader sr = new StreamReader("Book.txt", Encoding.GetEncoding("utf-8")))
                 {
                     tmp = sr.ReadToEnd();
+                    sr.Close();
+                }
+
+
+                using (StreamReader sr = new StreamReader("ShopButton.txt", Encoding.GetEncoding("utf-8")))
+                {
+                    button_tmp = sr.ReadToEnd();
                     sr.Close();
                 }
 
@@ -98,15 +115,36 @@ namespace HTMLPresser
                 foreach (var book in booklist)
                 {
                     string tag = tmp;
+                    string btn = button_tmp;
+                    StringBuilder bt = new StringBuilder();
+
                     tag = tag.Replace("【_TITLE_】", book.BookName);
                     tag = tag.Replace("【_VALUE_】", book.ValueText);
                     tag = tag.Replace("【_FILE_】", book.ImageFileName);
                     tag = tag.Replace("【_SPEC_】", book.Spec);
                     tag = tag.Replace("【_DATE_】", book.PublishdDate.ToString("yyyy/MM/dd"));
-                    tag = tag.Replace("【_URL_】", book.ShopURL);
+
+                    if (book.IsSoldout == true)
+                    {
+                        btn = btn.Replace("【_URL_】", "#kikan");
+                        btn = btn.Replace("【_Button_Option_】", "class=\"btn red\"");
+                        btn = btn.Replace("【_BUTTON_TITLE_】", "完売");
+                        bt.Append(btn);
+                    }
+                    else
+                    {
+                        foreach (var shopinfo in book.ShopInfoList)
+                        {
+                            btn = btn.Replace("【_URL_】", shopinfo.ShopURL);
+                            btn = btn.Replace("【_Button_Option_】", $"class=\"btn {shopinfo.Button_color.ToString()}\"");
+                            btn = btn.Replace("【_BUTTON_TITLE_】", shopinfo.ShopName);
+
+                            bt.Append(btn);
+                            btn = button_tmp;
+                        }
+                    }
+                    tag = tag.Replace("【_BUTTON_】", bt.ToString());
                     tag = tag.Replace("【_INFO_】", book.Info);
-                    tag = tag.Replace("【_BOOK_TYPE_】", (count % 2 == 0) ? "01" : "01");
-                    tag = tag.Replace("【_Button_Option_】", (!book.IsSoldout) ? "target=\"_break\" class=\"btn blue\"" : "class=\"btn red\"");
                     sb.Append(tag);
                     count++;
                 }
@@ -282,7 +320,41 @@ namespace HTMLPresser
                     book.ImageFileName = image[0].GetAttribute("src").Substring(4); // img/分
 
                     var url = c.GetElementsByTagName("a");
-                    book.ShopURL = url[0].GetAttribute("href"); // img/分
+                    //book.ShopURL = url[0].GetAttribute("href"); // img/分
+                    book.ShopInfoList.Clear();
+
+                    foreach (var shop in url)
+                    {
+                        ShopInfo shop_info = new ShopInfo();
+                        shop_info.ShopURL = shop.GetAttribute("href");
+                        shop_info.ShopName = shop.TextContent;
+                        string btn_type = shop.GetAttribute("class");
+                        switch(btn_type)
+                        {
+                            default:
+                            case "btn black":
+                                shop_info.Button_color = Buttoncolors.black;
+                                break;
+                            case "btn blue":
+                                shop_info.Button_color = Buttoncolors.blue;
+                                break;
+                            case "btn pink":
+                                shop_info.Button_color = Buttoncolors.pink;
+                                break;
+                            case "btn green":
+                                shop_info.Button_color = Buttoncolors.green;
+                                break;
+                            case "btn white":
+                                shop_info.Button_color = Buttoncolors.white;
+                                break;
+                            case "btn yellow":
+                                shop_info.Button_color = Buttoncolors.yellow;
+                                break;
+                        }
+
+                        book.ShopInfoList.Add(shop_info);
+
+                    }
 
                     var info = c.GetElementsByTagName("p");
                     book.Info = info[0].InnerHtml;
